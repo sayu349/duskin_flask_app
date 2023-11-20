@@ -9,7 +9,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 #基本クラス作成
-class Base(declarative_base):
+class Base(DeclarativeBase):
     pass
 
 #モデル宣言
@@ -56,7 +56,7 @@ class Period(Base):
 
 
 class Week(Base):
-    __tablemame__ = "weeks"
+    __tablename__ = "weeks"
 
     week: Mapped[str] = mapped_column(primary_key=True)
 
@@ -76,7 +76,7 @@ class Customer(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_name: Mapped[str] = mapped_column(str(15))
-    telephon_number: Mapped[int] = mapped_column(int(12))
+    telephon_number: Mapped[int]
 
     contract : Mapped["Contract"] = relationship(back_populates="customer")
 
@@ -86,7 +86,7 @@ class Product(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     product_name: Mapped[str] = mapped_column(str(40))
-    product_price:Mapped[int] = mapped_column(int(5))
+    product_price:Mapped[int]
 
     contract : Mapped[list[Contract]] = relationship(back_populates="product")
 
@@ -120,3 +120,10 @@ class Pay_methood(Base):
     pay_methood_name: Mapped[str]
 
     pay : Mapped[list["Pay"]] = relationship(back_populates="pay_methood")
+
+#エンジン作成
+engin = create_engine("sqlite://", echo=True)
+
+#実際にtableをcreateする(tabal全てをスキーマに1度で生成)
+Base.metadata.create_all(engin)
+
