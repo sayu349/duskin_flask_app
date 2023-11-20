@@ -7,6 +7,15 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+import pandas as pd
+import os
+
+#DBファイル作成
+base_dir = os.path.dirname(__file__)
+database = "sqlite:///" + os.path.join(base_dir, 'data.sqlite')
+
+#エンジン作成
+engin = create_engine(database, echo=True)
 
 #基本クラス作成
 class Base(DeclarativeBase):
@@ -75,7 +84,7 @@ class Customer(Base):
     __tablename__ = "customers"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    customer_name: Mapped[str] = mapped_column(str(15))
+    customer_name: Mapped[str]
     telephon_number: Mapped[int]
 
     contract : Mapped["Contract"] = relationship(back_populates="customer")
@@ -85,7 +94,7 @@ class Product(Base):
     __tablename__ = "products"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    product_name: Mapped[str] = mapped_column(str(40))
+    product_name: Mapped[str]
     product_price:Mapped[int]
 
     contract : Mapped[list[Contract]] = relationship(back_populates="product")
@@ -121,9 +130,9 @@ class Pay_methood(Base):
 
     pay : Mapped[list["Pay"]] = relationship(back_populates="pay_methood")
 
-#エンジン作成
-engin = create_engine("sqlite://", echo=True)
-
 #実際にtableをcreateする(tabal全てをスキーマに1度で生成)
 Base.metadata.create_all(engin)
 
+#table操作
+session_maker = sessionmaker(bind=engin)
+session = session_maker()
