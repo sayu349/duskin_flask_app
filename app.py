@@ -1,37 +1,41 @@
-from sqlalchemy import create_engine,Column, Integer, String, or_
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import ForeignKey
-from sqlalchemy import String
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 import pandas as pd
 import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
+
+app =Flask(__name__)
 
 #DBファイル作成
 base_dir = os.path.dirname(__file__)
 database = "sqlite:///" + os.path.join(base_dir, 'data.sqlite')
 
-#エンジン作成
-engin = create_engine(database, echo=True)
+app.config['SECRET_KEY'] = os.urandom(24)
+app.config['SQLALCHEMY_DATABASE_URI'] = database
+app.config['SQALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 #基本クラス作成
 class Base(DeclarativeBase):
     pass
 
+db = SQLAlchemy(model_class=Base)
+
 #モデル宣言
 #サブクラス作成
-class Contract(Base):
-    __tablename__ = "contracts"
-
+class Contract(db.Model):
+    
     id: Mapped[int] = mapped_column(primary_key=True)
-    period_id: Mapped[int] = mapped_column(ForeignKey("period.id"))
-    customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"))
+    period_id: Mapped[int] = mapped_column(ForeignKey("Period.id"))
+    customer_id: Mapped[int] = mapped_column(ForeignKey("Customer.id"))
     product_id: Mapped[int] = mapped_column(ForeignKey("products.id"))
     contract_number: Mapped[int]
-    contract_situationm: Mapped[str] = mapped_column(str(30))
+    contract_situationm: Mapped[str]
 
     period : Mapped[list["Period"]] = relationship(
         back_populates="contract", cascade="all, delete-orphan"
@@ -46,8 +50,8 @@ class Contract(Base):
     )
 
 
-class Period(Base):
-    __tablename__ = "period"
+class Period(db.Model):
+    
 
     id: Mapped[int] = mapped_column(primary_key=True)
     week : Mapped[str] = mapped_column(ForeignKey("weeks.week"))
@@ -64,24 +68,24 @@ class Period(Base):
     )
 
 
-class Week(Base):
-    __tablename__ = "weeks"
+class Week(db.Model):
+   
 
     week: Mapped[str] = mapped_column(primary_key=True)
 
     period : Mapped[list["Period"]] = relationship(back_populates="weeks")
 
 
-class Week_day(Base):
-    __tablename__ = "week_days"
+class Week_day(db.Model):
+    
 
     week_day: Mapped[str] = mapped_column(primary_key=True)
 
     period : Mapped[list["Period"]] = relationship(back_populates="week_days")
 
 
-class Customer(Base):
-    __tablename__ = "customers"
+class Customer(db.Model):
+    
 
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_name: Mapped[str]
@@ -90,8 +94,8 @@ class Customer(Base):
     contract : Mapped["Contract"] = relationship(back_populates="customer")
 
 
-class Product(Base):
-    __tablename__ = "products"
+class Product(db.Model):
+    
 
     id: Mapped[int] = mapped_column(primary_key=True)
     product_name: Mapped[str]
@@ -100,8 +104,8 @@ class Product(Base):
     contract : Mapped[list[Contract]] = relationship(back_populates="product")
 
 
-class Pay(Base):
-    __tablename__ = "pay"
+class Pay(db.Model):
+    
 
     id: Mapped[int] = mapped_column(primary_key=True)
     customer_id: Mapped[int] = mapped_column(ForeignKey("customers.id"))#この行はいらないかも？
@@ -122,17 +126,13 @@ class Pay(Base):
     )
 
 
-class Pay_methood(Base):
-    __tablename__ = "pay_methood"
+class Pay_methood(db.Model):
+    
 
     id: Mapped[int] = mapped_column(primary_key=True)
     pay_methood_name: Mapped[str]
 
     pay : Mapped[list["Pay"]] = relationship(back_populates="pay_methood")
 
-#実際にtableをcreateする(tabal全てをスキーマに1度で生成)
-Base.metadata.create_all(engin)
-
-#table操作
-session_maker = sessionmaker(bind=engin)
-session = session_maker()
+with app.app_context():
+    db.create_all()
