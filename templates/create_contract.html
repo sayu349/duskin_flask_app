@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block body %}
+    <div class="new_contract">
+        <h1>契約登録画面</h1>
+        <form method="post" action="{{url_for(create_contract)}}">
+            id:<input type="number" id="id">
+            周期：<input type="number" id="period_id">
+            顧客id:<input type="number" id="customer_id">
+            商品id:<input type="number" id="product_id">
+            契約数:<input type="number" id="contract_number">
+            契約状況:
+            <input type="checkbox" name="contoract_situation" value="契約中" id="contoract_situation" checked>契約中
+            <input type="checkbox" name="contoract_situation" value="解約済" id="contoract_situation">解約済
+            <input type="submit" value="登録" class="button">
+        </form>
+    </div>
+{% endblock %}
