@@ -1,22 +1,22 @@
 {% extends "base.html" %}
 {% block body %}
     <a href="{{ url_for('create_contract') }}" class="button">新規作成</a>
-
-    <h2>合計金額:全週</h2>
+    <a href="{{ url_for('product') }}" class="button">商品一覧へ</a>
+    <h2>全データ合計:金額・顧客件数</h2>
     <ul>
-        {% for money_customer in money_customer_toatal %}
         <div>
-            <p>{{ Contract.contract_number*Product.product_price }} {{func.count(distinct(Contract.customer_id))}}</p>
+            <p>{{ money_customer_total.product_price * money_customer_total.contract_number }} </p>
+            <p>{{ func.count(distinct(money_customer_total.customer_id)) }}</p>
         </div>
-        {% endfor %}
     </ul>
     <ul>
         {% for period_list in period_lists %}
         <div>
-            <p>{{period}}</p>
+            <p>{{period_list.period_id}}</p>
             <form method="post" action="{{url_for('list', period_id=period_id) }}">
                 <button type="submit" class="period__by_contract-botton">顧客一覧</button>
             </form>
         </div>
+        {% endfor %}
     </ul>
 {% endblock %}

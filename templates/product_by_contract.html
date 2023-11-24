@@ -1,3 +1,15 @@
 {% extends "base.html" %}
 {% block body %}
+    <a href="{{url_for(product)}}" class="button">戻る</a>
+    <h1>{ product.id }の顧客一覧</h1>
+    <ul>
+        {% for product_by_contract_list in product_by_contract_lists %}
+        <div>
+            <p>{{ product_by_contract_list.period_id }}</p>
+            <p>{{ product_by_contract_list.customer_name }}</p>
+            <p>{{ product_by_contract_list.telephon_number }}</p>
+        </div>
+        {% endfor %}
+    </ul>
+
 {% endblock %}
