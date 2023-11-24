@@ -142,7 +142,7 @@ class Pay_methood(db.Model):
 @app.route("/")
 def index():
         
-    money_customer_total = select((Contract.contract_number) * (Product.product_price)).select(func.count(distinct(Contract.customer_id))).join(Product).where(Contract.contract_situationm == "解約済み")
+    money_customer_total = select(Contract.contract_number).select(Product.product_price).select(func.count(distinct(Contract.customer_id))).join(Product).where(Contract.contract_situationm != "解約済み")
     
     Period_lists = Period.query.all()
 
@@ -170,33 +170,33 @@ def create_contract():
     return render_template('create_contract.html')
 
 
-@app.route("/period_contract/<int:period_id>")
+@app.route("/period_contract/<int:period_id>", methods = ["POST"])
 def list(period_id):
-    period_by_contract_list =select(Contract).where(Contract.contract_situationm == "解約済み").where(Contract.period_id == period_id).order_by(Contract.customer_id)
+    period_by_contract_list =select(Contract).where(Contract.contract_situationm != "解約済み").where(Contract.period_id == period_id).order_by(Contract.customer_id)
+        
+    customer_by_contract_cutomer_total = select(sum(Product.product_price * Contract.contract_number)).select(Customer).join(Product).join(Customer).where(Contract.contract_situationm != "解約済み").where(Contract.period_id == period_id).group_by(Contract.customer_id)
     
-    customer_by_contract_cutomer_total = select(sum(Product.product_price * Contract.contract_number), Customer).join(Product).join(Customer).where(Contract.contract_situationm == "解約済み").where(Contract.period_id == period_id).group_by(Contract.customer_id)
- 
-    
-    period_by_contract_cutomer_total = select(sum(Product.product_price * Contract.contract_number)), func.count(distinct(Contract.customer_id)).join(Product).join(Customer).where(Contract.contract_situationm == "解約済み").where(Contract.period_id == period_id)
+        
+    period_by_contract_cutomer_total = select(sum(Product.product_price * Contract.contract_number)), func.count(distinct(Contract.customer_id)).join(Product).join(Customer).where(Contract.contract_situationm != "解約済み").where(Contract.period_id == period_id)
 
 
     return render_template("period_contract_list.html", period_by_contract_list=period_by_contract_list ,
-                            customer_by_contract_cutomer_total=customer_by_contract_cutomer_total ,
-                            period_by_contract_cutomer_total=period_by_contract_cutomer_total)
+                                customer_by_contract_cutomer_total=customer_by_contract_cutomer_total ,
+                                period_by_contract_cutomer_total=period_by_contract_cutomer_total)
 
 
 @app.route("/product")
 def product():
-    prouduct_list =select(Product).order_by(Product.id)
+    prouduct_lists =select(Product).order_by(Product.id)
 
-    return render_template("product.html", prouduct_list=prouduct_list)
+    return render_template("product.html", prouduct_lists=prouduct_lists)
 
 
-@app.route("/product/<int:Product_id>")
+@app.route("/product/<int:product_id>", methods = ["POST"])
 def product_by_contract(product_id):
-    product_by_contract_list = select(Contract.product_id,Contract.contract_situationm,Contract.period_id,Customer.customer_name,Customer.telephon_number) .join(Customer).where(Contract.product_id == product_id).where(Contract.contract_situationm == "解約済み").order_by(Contract.customer_id)
+    product_by_contract_lists = select(Contract.period_id,Customer.customer_name,Customer.telephon_number) .join(Customer).where(Contract.product_id == product_id).where(Contract.contract_situationm != "解約済み").order_by(Contract.customer_id)
     
-    return render_template("product_by_contract.html", product_by_contract_list=product_by_contract_list)
+    return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists)
 
 if __name__ == '__main__':
     app.run()
