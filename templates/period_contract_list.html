@@ -5,16 +5,19 @@
     <ul>
         {% for list in period_by_contract_list %}
         <div>
-            <p>{{ list.id }}</p>
+            <p>{{ list.contract_id }}</p>
             <p>{{ list.customer_id }}</p>
-            <p>{{ list.product_id }}</p>
+            <p>{{ list.customer_name }}</p>
+            <p>{{ list.telephon_number }}</p>
+            <p>{{ list.product_name }}</p>
+            <p>{{ list.product_price }}</p>
             <p>{{ list.contract_number }}</p>
             <p>{{ list.contoract_situation }}</p>
         </div>
         {% endfor %}
         {% for list in customer_by_contract_cutomer_total %}
         <div>
-            <p>{{ list.product_price * list.contract_number }}</p>
+            <p>{{ list.money_total }}</p>
             <p>{{ list.customer_name }}</p>
             <p>{{ list.telephon_number }}</p>
         </div>

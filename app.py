@@ -32,42 +32,35 @@ class Contract(db.Model):
     
     __tablename__ = "contracts"
 
-    id = db.Column(db.Integer, primary_key=True)
-    period_id = db.Column(db.Integer, db.ForeignKey("period.id"))
-    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))
-    product_id = db.Column(db.Integer, db.ForeignKey("products.id"))
+    contract_id = db.Column(db.Integer, primary_key=True)
+    period_id = db.Column(db.Integer, db.ForeignKey("period.period_id"))
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.customer_id"))
+    product_id = db.Column(db.Integer, db.ForeignKey("products.product_id"))
     contract_number = db.Column(db.Integer)
     contract_situationm = db.Column(db.String)
 
     #主リレーション
-    pay = db.relationship("Pay", back_populates = "contracts", lazy=True)
+    pay = db.relationship("Pay", backref = "contracts")
 
-    #外部リレーション
-    period = db.relationship("Period", back_populates = "contracts")
-    customers = db.relationship("Customer", back_populates = "contracts")
-    products = db.relationship("Product", back_populates = "contracts")
 
     def __str__(self):
-        return f'契約ID:{self.id}周期ID:{self.period_id}顧客ID{self.customer_id}商品ID:{self.product_id}契約数:{self.contract_number}契約状況:{self.contract_situationm}'
+        return f'契約ID:{self.contract_id}周期ID:{self.period_id}顧客ID{self.customer_id}商品ID:{self.product_id}契約数:{self.contract_number}契約状況:{self.contract_situationm}'
 
 
 class Period(db.Model):
     
     __tablename__ = "period"
 
-    id = db.Column(db.Integer, primary_key=True)
+    period_id = db.Column(db.Integer, primary_key=True)
     week = db.Column(db.String, db.ForeignKey("weeks.week"))
     week_day = db.Column(db.String,db.ForeignKey("week_days.week_day"))
 
     #主リレーション
-    contracts = db.relationship("Contract", back_populates = "period", lazy=True)
+    contracts = db.relationship("Contract", backref = "period")
 
-    #外部リレーション
-    weeks = db.relationship("Week", back_populates = "period")
-    week_days = db.relationship("Week_day", back_populates = "week_days")
   
     def __str__(self):
-        return f'周期ID:{self.id}週:{self.weeks}曜日:{self.week_days}'
+        return f'周期ID:{self.period_id}週:{self.weeks}曜日:{self.week_days}'
 
 
 class Week(db.Model):
@@ -77,7 +70,7 @@ class Week(db.Model):
     week= db.Column(db.String, primary_key=True)
 
     #主リレーション
-    period = db.relationship("Period",back_populates="weeks", lazy=True)
+    period = db.relationship("Period",backref="weeks")
 
     def __str__(self):
         return f'週{self.week}'
@@ -90,7 +83,7 @@ class Week_day(db.Model):
     week_day= db.Column(db.String, primary_key=True)
 
     #主リレーション
-    period = db.relationship("Period",back_populates="week_days", lazy=True)
+    period = db.relationship("Period",backref="week_days")
 
     def __str__(self):
         return f'曜日:{self.week_day}'
@@ -100,64 +93,60 @@ class Customer(db.Model):
     
     __tablename__ = "customers"
 
-    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, primary_key=True)
     customer_name = db.Column(db.String)
     telephon_number = db.Column(db.Integer)
 
     #主リレーション
-    contracts = db.relationship("Contract", back_populates="customer", lazy=True)
-    pay = db.relationship("Pay", back_populates = "customers", lazy=True)
+    contracts = db.relationship("Contract", backref="customer")
+    pay = db.relationship("Pay", backref = "customers")
 
     def __str__(self):
-        return f'顧客ID:{self.id}顧客名:{self.customer_name}電話番号:{self.telephon_number}'
+        return f'顧客ID:{self.customer_id}顧客名:{self.customer_name}電話番号:{self.telephon_number}'
 
 
 class Product(db.Model):
     
     __tablename__ = "products"
 
-    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, primary_key=True)
     product_name = db.Column(db.String)
     product_price = db.Column(db.Integer)
 
     #主リレーション
-    contracts = db.relationship("contracts", back_populates="product", lazy=True)
+    contracts = db.relationship("contracts", backref="product")
 
     def __str__(self):
-        return f'商品ID:{id}商品名:{self.product_name}商品価格:{self.product_price}'
+        return f'商品ID:{self.product_id}商品名:{self.product_name}商品価格:{self.product_price}'
 
 
 class Pay(db.Model):
     
     __tablename__ = "pays"
 
-    id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey("customers.id"))#この行はいらないかも？
-    contract_id  = db.Column(db.Integer, db.ForeignKey("contracts.id"))
-    pay_method_id  = db.Column(db.Integer, db.ForeignKey("pay_method.id"))
+    pay_id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey("customers.customer_id"))#この行はいらないかも？
+    contract_id  = db.Column(db.Integer, db.ForeignKey("contracts.contract_id"))
+    pay_method_id  = db.Column(db.Integer, db.ForeignKey("pay_method.pay_method_id"))
     #pay_total消した
-    #外部リレーション
-    customers = db.relationship("Customer", back_populates = "pay")
-    contracts = db.relationship("Contract", back_populates = "pay")
-    pay_method = db.relationship("Pay_method", back_populates = "pay")
+
 
 
     def __str__(self):
-        return f'支払ID:{self.id}顧客ID:{self.customer_id}契約ID:{self.contract_id}支払方法ID:{self.pay_method_id}'
+        return f'支払ID:{self.pay_id}顧客ID:{self.customer_id}契約ID:{self.contract_id}支払方法ID:{self.pay_method_id}'
 
 
 class Pay_method(db.Model):
     
     __tablename__ = "pay_method"
 
-    id = db.Column(db.Integer, primary_key=True)
+    pay_method_id = db.Column(db.Integer, primary_key=True)
     pay_method_name = db.Column(db.String)
 
-    #外部リレーション
-    pay = db.relationship("Pay",back_populates="pay_method", lazy=True)
+
 
     def __str__(self):
-        return f'支払方法ID:{self.id}支払方法:{self.pay_method_name}'
+        return f'支払方法ID:{self.pay_method_id}支払方法:{self.pay_method_name}'
 
 
 @app.route("/")
@@ -165,12 +154,12 @@ def index():
         
     money_customer_total = (
         db.session.query(db.func.count(distinct(Contract.customer_id)).label("customer_total") , db.func.sum(Contract.contract_number * Product.product_price).label("money_total"))
-        .filter(Contract.product_id == Product.id)
+        .filter(Contract.product_id == Product.product_id)
     )
 
 
     Period_lists = (
-        db.session.query(Period)
+        db.session.query(Period.period_id)
     )
 
     return render_template("index.html", money_customer_total=money_customer_total, Period_lists=Period_lists)
@@ -200,12 +189,12 @@ def create_contract():
 @app.route("/period_contract/<int:period_id>", methods = ["POST"])
 def list(period_id):
     period_by_contract_list = (
-        db.session.query(Contract)
+        db.session.query(Contract.contract_id, Contract.customer_id, Customer.customer_name, Customer.telephon_number, Product.product_name, Product.product_price, Contract.contract_number, Contract.contract_situationm)
         .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
         .order_by(Contract.customer_id)
     )
     customer_by_contract_cutomer_total = (
-        db.session.query(func.sum(Product.product_price * Contract.contract_number).label("money_total"), Customer)
+        db.session.query(func.sum(Product.product_price * Contract.contract_number).label("money_total"), Customer.customer_name, Customer.telephon_number)
         .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
         .group_by(Contract.customer_id)
         .order_by(Contract.customer_id)
@@ -225,8 +214,8 @@ def list(period_id):
 @app.route("/product")
 def product():
     prouduct_lists =(
-        db.session.query(Product)
-        .order_by(Product.id)
+        db.session.query(Product.product_id, Product.product_name, Product.product_price)
+        .order_by(Product.product_id)
     )
 
     return render_template("product.html", prouduct_lists=prouduct_lists)
