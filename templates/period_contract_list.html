@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block body %}
-    <a href="{{url_for(index)}}" class="button">戻る</a>
+    <a href="/" class="button">戻る</a>
     <h1>{{ period_id }}の顧客リスト</h1>
     <ul>
         {% for list in period_by_contract_list %}

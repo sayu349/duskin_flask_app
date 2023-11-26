@@ -13,7 +13,7 @@
         {% for period_list in period_lists %}
         <div>
             <p>{{ period_list.period_id }}</p>
-            <form method="post" action="{{url_for('list', period_id=period_id) }}">
+            <form method="post" action="{{ url_for('list', period_id=period_id) }}">
                 <button type="submit" class="period__by_contract-botton">顧客一覧</button>
             </form>
         </div>

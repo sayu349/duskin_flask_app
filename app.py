@@ -170,7 +170,7 @@ def create_contract():
     # POST
     if request.method == 'POST':
         # 入力値取得
-        id = request.form['id']
+        id = request.form['contract_id']
         period_id = request.form['period_id']
         product_id = request.form['product_id']
         contract_number = request.form['contract_number']
@@ -181,7 +181,7 @@ def create_contract():
         db.session.add(contract)
         db.session.commit()
         # 一覧へ
-        return redirect(url_for('index'))
+        return redirect("/")
     # GET
     return render_template('create_contract.html')
 

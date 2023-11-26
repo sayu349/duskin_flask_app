@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block body %}
-    <a href="{{url_for(index)}}" class="button">戻る</a>
+    <a href="/" class="button">戻る</a>
     <div class="new_contract">
         <h1>契約登録画面</h1>
-        <form method="post" action="{{url_for(create_contract)}}">
+        <form method="post" action="/create_contract">
             id:<input type="number" id="contract_id">
             周期：<input type="number" id="period_id">
             顧客id:<input type="number" id="customer_id">
