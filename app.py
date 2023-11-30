@@ -37,7 +37,7 @@ class Contract(db.Model):
     customer_id = db.Column(db.Integer, db.ForeignKey("customers.customer_id"))
     product_id = db.Column(db.Integer, db.ForeignKey("products.product_id"))
     contract_number = db.Column(db.Integer)
-    contract_situationm = db.Column(db.String)
+    contract_situation = db.Column(db.String)
 
     #主リレーション
     pay = db.relationship("Pay", backref = "contracts")
@@ -98,7 +98,7 @@ class Customer(db.Model):
     telephon_number = db.Column(db.Integer)
 
     #主リレーション
-    contracts = db.relationship("Contract", backref="customer")
+    contracts = db.relationship("Contract", backref="customers")
     pay = db.relationship("Pay", backref = "customers")
 
     def __str__(self):
@@ -114,7 +114,7 @@ class Product(db.Model):
     product_price = db.Column(db.Integer)
 
     #主リレーション
-    contracts = db.relationship("contracts", backref="product")
+    contracts = db.relationship("Contract", backref="products")
 
     def __str__(self):
         return f'商品ID:{self.product_id}商品名:{self.product_name}商品価格:{self.product_price}'
@@ -143,7 +143,7 @@ class Pay_method(db.Model):
     pay_method_id = db.Column(db.Integer, primary_key=True)
     pay_method_name = db.Column(db.String)
 
-
+    pay_method = db.relationship("Pay", backref = "pey_method")
 
     def __str__(self):
         return f'支払方法ID:{self.pay_method_id}支払方法:{self.pay_method_name}'
@@ -170,13 +170,13 @@ def create_contract():
     # POST
     if request.method == 'POST':
         # 入力値取得
-        id = request.form['contract_id']
-        period_id = request.form['period_id']
-        product_id = request.form['product_id']
-        contract_number = request.form['contract_number']
-        contract_situation = request.form['contract_situation']
+        contract_id = request.form.get('contract_id')
+        period_id = request.form.get('period_id')
+        product_id = request.form.get('product_id')
+        contract_number = request.form.get('contract_number')
+        contract_situation = request.form.get('contract_situation')
         # インスタンス生成
-        contract = Contract(id=id, period_id=period_id,product_id=product_id,contract_number=contract_number,contract_situation=contract_situation)
+        contract = Contract(contract_id=contract_id, period_id=period_id, product_id=product_id, contract_number=contract_number, contract_situation=contract_situation)
         # 登録
         db.session.add(contract)
         db.session.commit()
