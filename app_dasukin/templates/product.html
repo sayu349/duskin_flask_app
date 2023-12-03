@@ -4,12 +4,9 @@
     <ul>
         {% for product_list in product_lists %}
         <div>
-            <p>{{ product_list.product_id}}</p>
+            <a href="{{ url_for('product_by_contract', product_id=product_list.product_id) }}">{{ product_list.product_id }}</a>
             <p>{{ product_list.product_name }}</p>
             <p>{{ product_list.product_price}}</p><br>
-            <form method="post" action="{{url_for('product_by_contract', product_id=product_id) }}">
-                <button type="submit" class="product_by_contract_list-botton">顧客一覧</button>
-            </form>
         </div>
         {% endfor %}
     </ul>

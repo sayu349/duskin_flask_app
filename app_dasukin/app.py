@@ -132,7 +132,7 @@ def list(period_id):
 
     period_customer_total = Contract.query.filter(Contract.contract_situation == "契約済", Contract.period_id == period_id).group_by(Contract.customer_id).count()
 
-    period_money_total = Contract.query.group_by(Contract.customer_id).filter(Contract.contract_situation != "解約済み", Contract.period_id == period_id)
+    period_money_total = Contract.join(Product).filter(Contract.contract_situation != "解約済み", Contract.period_id == period_id).with_entities(sum(Contract.contract_number * Product.product_price))
 
     return render_template("period_contract_list.html", period_by_contract_list=period_by_contract_list
                            ,groupby_customer_money=groupby_customer_money,period_customer_total=period_customer_total
@@ -141,20 +141,14 @@ def list(period_id):
 
 @app.route("/product")
 def product():
-    prouduct_lists =db.session.query(db.select(Product.product_id,Product.product_name, Product.product_price)
-                    .order_by(Product.product_id)
-                    )
+    product_lists = Product.query.all()
 
-    return render_template("product.html", prouduct_lists=prouduct_lists)
+    return render_template("product.html", product_lists=product_lists)
 
 
-@app.route("/product/<product_id>", methods = ["POST"])
+@app.route("/product/<product_id>")
 def product_by_contract(product_id):
-    product_by_contract_lists = (
-        db.session.query(Contract.period_id, Customer.customer_name, Customer.telephon_number)
-        .filter(Contract.contract_situationm != "解約済み", Contract.product_id == product_id)
-        .order_by(Contract.customer_id)
-    )
+    product_by_contract_lists = Contract.query.join(Customer,Product).filter(Contract.product_id == product_id,Contract.contract_situation == "契約済").with_entities(Customer.customer_name,Contract.contract_number,Contract.pay_method_id)
     return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists)
 
 if __name__ == '__main__':

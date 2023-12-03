@@ -45,9 +45,9 @@ with app.app_context():
 
 #Productデフォルト登録
 with app.app_context():
-    mop = Product(product_id = "S212", product_name = "ゴールデンモップ", product_price = 930)
-
-    db.session.add_all([mop])
+    floor_mop = Product(product_id = "S212", product_name = "ゴールデンモップ", product_price = 930)
+    handy_mop = Product(product_id = "S237", product_name = "フリージー", product_price = 1040)
+    db.session.add_all([floor_mop,handy_mop])
     db.session.commit()
 
 
