@@ -86,3 +86,41 @@ class AddDeliveryCycleForm(Form):
     submit = SubmitField("送信")
 
 #--------------------------------------------------------------------------------------------------------------------------------
+
+# 契約情報追加フォーム
+"""
+契約マスタ
+- id                (PK) : 契約ID
+- delivery_cycle_id (FK) : 周期ID
+- customer_id       (FK) : 顧客ID
+- product_id        (FK) : 商品ID
+- contract_number        : 契約数
+- contract_situation     : 契約状況
+- subtotal               : 小計
+"""
+class AddContractForm(Form):
+    # 契約ID：整数入力
+    contract_id = IntegerField("契約ID")
+
+    # 周期ID：整数入力
+    delivery_cycle_id = IntegerField("周期ID")
+
+    # 顧客ID：整数入力
+    customer_id = IntegerField("顧客ID")
+
+    # 商品ID：整数入力
+    product_id = IntegerField("商品ID")
+
+    # 契約数：文字列入力
+    contract_number = IntegerField("契約数")
+
+    # 契約状況；文字列入力
+    contract_situation = StringField("契約状況")
+
+    # 小計：整数入力
+    amount = IntegerField("小計")
+
+    # ボタン
+    submit = SubmitField("送信")
+
+#--------------------------------------------------------------------------------------------------------------------------------

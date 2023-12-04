@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>add_contract</title>
+</head>
+<body>
+    <h1>契約情報追加</h1>
+    <hr>
+    <p>契約情報を入力してください</p>
+    <form method="POST">
+        <!-- 契約ID -->
+        {{ form.contract_id.label }}{{ form.contract_id(size=30) }}<br>
+        <!-- 周期ID -->
+        {{ form.delivery_cycle_id.label }}{{ form.delivery_cycle_id(size=30) }}<br>
+        <!-- 顧客ID -->
+        {{ form.customer_id.label }}{{ form.customer_id(size=30) }}<br>
+        <!-- 商品ID -->
+        {{ form.product_id.label }}{{ form.product_id(size=30) }}<br>
+        <!-- 契約数 -->
+        {{ form.contract_number.label }}{{ form.contract_number(size=30) }}<br>
+        <!-- 契約状況 -->
+        {{ form.contract_situation.label }}{{ form.contract_situation(size=30) }}<br>
+        <!-- 小計 -->
+        {{ form.amount.label }}{{ form.amount(size=30) }}<br>
+        <!-- ボタン -->
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('home_page') }}">ホーム画面に戻る</a></p>
+</body>
+</html>

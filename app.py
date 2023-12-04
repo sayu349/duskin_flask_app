@@ -3,7 +3,7 @@ from flask_migrate import Migrate
 from models import db
 
 # forms.pyから各フォームを追加する
-from forms import AddCustomerForm, AddProductForm, AddPayMethodForm, AddDeliveryCycleForm
+from forms import AddCustomerForm, AddProductForm, AddPayMethodForm, AddDeliveryCycleForm, AddContractForm
 
 
 app = Flask(__name__)
@@ -236,6 +236,65 @@ def add_delivery_cycle_page():
     # Get
     else:
         return render_template("add_delivery_cycle.html", form=form)
+
+
+# 契約情報一覧
+@app.route("/contract_list")
+def contract_list_page():
+    # contractテーブルを取得する
+    """
+    クエリイメージ：
+    SERECT
+        *
+    FROM
+        contracts
+    ORDER BY
+        contract_id ASC
+    """
+    contracts = Contract.query.order_by(Contract.id).all()
+    return render_template("contract_list.html",contracts=contracts)
+
+# 契約情報追加
+@app.route("/add_contract", methods=["GET", "POST"])
+def add_contract_page():
+    form = AddContractForm(request.form)
+    # Post
+    if request.method == "POST":
+        # データ受け取り
+        contract_id = form.contract_id.data
+        delivery_cycle_id = form.delivery_cycle_id.data
+        customer_id = form.customer_id.data
+        product_id = form.product_id.data
+        contract_number = form.contract_number.data
+        contract_situation = form.contract_situation.data
+        amount = form.amount.data
+        # DBにデータ追加
+        """
+        クエリイメージ：
+        INSERT INTO delivery_cycles (id, delivery_cycle_id, customer_id, product_id, contract_number,contract_situation, amount)
+        VALUES (contract_id, delivery_cycle_id, customer_id, product_id, contract_number, contract_situation, amount)
+        """
+        new_contract = Contract(id=contract_id,
+                                delivery_cycle_id=delivery_cycle_id,
+                                customer_id=customer_id,
+                                product_id=product_id,
+                                contract_number=contract_number,
+                                contract_situation=contract_situation,
+                                amount=amount
+                                )
+        db.session.add(new_contract)
+        db.session.commit()
+        # ホーム画面に戻す
+        return redirect(url_for("home_page"))
+    # Get
+    else:
+        return render_template("add_contract.html", form=form)
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
