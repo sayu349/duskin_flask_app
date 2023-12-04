@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>home</title>
+</head>
+<body>
+    <h1>ホーム画面</h1>
+    <hr>
+    <h2>顧客情報</h2>
+    <ul>
+        <li><a href=" {{url_for('customer_list_page')}} ">顧客情報一覧</a></li>
+        <li><a href=" {{url_for('add_customer_page')}} ">顧客情報追加</a></li>
+    </ul>
+    <hr>
+    <h2>商品情報</h2>
+    <ul>
+        <li><a href=" {{url_for('product_list_page')}} ">商品情報一覧</a></li>
+        <li><a href=" {{url_for('add_product_page')}} ">商品情報追加</a></li>
+    </ul>
+</body>
+</html>

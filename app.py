@@ -1,170 +1,164 @@
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.orm import relationship
-import pandas as pd
-import os
-from flask import Flask, request, redirect, url_for, render_template
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, render_template, redirect, url_for
 from flask_migrate import Migrate
-from sqlalchemy import select, distinct, func
+from models import db
+
+# forms.pyから各フォームを追加する
+from forms import AddCustomerForm, AddProductForm
+
 
 app = Flask(__name__)
 
+# 下記設定内容は、config.pyにまとめてみよう！
+# ---------------------------------------------------------------------
+# before
+"""
 #DBファイル設定
 app.config['SECRET_KEY'] = os.urandom(24)
 base_dir = os.path.dirname(__file__)
 database = "sqlite:///" + os.path.join(base_dir, 'data.sqlite')
 app.config['SQLALCHEMY_DATABASE_URI'] = database
 app.config['SQALCHEMY_TRACK_MODIFICATIONS'] = False
-
-db = SQLAlchemy(app)
-
-#基本クラス作成
-class Base(DeclarativeBase):
-    pass
-
+"""
+# ---------------------------------------------------------------------
+# after
+app.config.from_object("config.Config")
+# ---------------------------------------------------------------------
 
 
+# DBとFlaskの紐づけ
+db.init_app(app)
+# マイグレーションの利用を宣言
 Migrate(app, db)
-#モデル宣言
-#サブクラス作成
-class Contract(db.Model):
-    
-    __tablename__ = "contracts"
-
-    contract_id = db.Column(db.Integer, primary_key=True)
-    period_id = db.Column(db.Integer, db.ForeignKey("period.period_id"))
-    customer_id = db.Column(db.Integer, db.ForeignKey("customers.customer_id"))
-    product_id = db.Column(db.Integer, db.ForeignKey("products.product_id"))
-    contract_number = db.Column(db.Integer)
-    contract_situation = db.Column(db.String)
-
-    #主リレーション
-    pay = db.relationship("Pay", backref = "contracts")
 
 
-    def __str__(self):
-        return f'契約ID:{self.contract_id}周期ID:{self.period_id}顧客ID{self.customer_id}商品ID:{self.product_id}契約数:{self.contract_number}契約状況:{self.contract_situationm}'
+# 各モデル(DB・Table)の設定は、models.pyにまとめてみよう！
+# ---------------------------------------------------------------------
+# before
+"""
+各クラスがapp.pyに、設定されていました
+
+Contract   : 契約マスタ
+Period     : 周期マスタ
+Week       : 週マスタ
+Week_day   : 曜日マスタ
+Customer   : 顧客マスタ
+Product    : 商品マスタ
+Pay        : 支払いマスタ
+Pay_method : 支払い方法マスタ
+"""
+# ---------------------------------------------------------------------
+# after
+"""
+Contract       : 契約マスタ
+Delivery_cycle : 周期マスタ   ← 名前変更しました(Periodから変更)
+Week           : 週マスタ     ← とりあえず後回し
+Week_day       : 曜日マスタ   ← とりあえず後回し
+Customer       : 顧客マスタ
+Product        : 商品マスタ
+Pay            : 支払いマスタ
+Pay_method     : 支払い方法マスタ
+"""
+from models import (
+                    Contract,
+                    Delivery_cycle,
+                    Customer,
+                    Product,
+                    Pay,
+                    Pay_method
+                )
+# ---------------------------------------------------------------------
 
 
-class Period(db.Model):
-    
-    __tablename__ = "period"
+# ==================================================
+# ルーティング
+# ==================================================
 
-    period_id = db.Column(db.Integer, primary_key=True)
-    week = db.Column(db.String, db.ForeignKey("weeks.week"))
-    week_day = db.Column(db.String,db.ForeignKey("week_days.week_day"))
-
-    #主リレーション
-    contracts = db.relationship("Contract", backref = "period")
-
-  
-    def __str__(self):
-        return f'周期ID:{self.period_id}週:{self.weeks}曜日:{self.week_days}'
-
-
-class Week(db.Model):
-   
-    __tablename__ = "weeks"
-
-    week= db.Column(db.String, primary_key=True)
-
-    #主リレーション
-    period = db.relationship("Period",backref="weeks")
-
-    def __str__(self):
-        return f'週{self.week}'
-
-
-class Week_day(db.Model):
-
-    __tablename__ = "week_days"
-    
-    week_day= db.Column(db.String, primary_key=True)
-
-    #主リレーション
-    period = db.relationship("Period",backref="week_days")
-
-    def __str__(self):
-        return f'曜日:{self.week_day}'
-
-
-class Customer(db.Model):
-    
-    __tablename__ = "customers"
-
-    customer_id = db.Column(db.Integer, primary_key=True)
-    customer_name = db.Column(db.String)
-    telephon_number = db.Column(db.Integer)
-
-    #主リレーション
-    contracts = db.relationship("Contract", backref="customers")
-    pay = db.relationship("Pay", backref = "customers")
-
-    def __str__(self):
-        return f'顧客ID:{self.customer_id}顧客名:{self.customer_name}電話番号:{self.telephon_number}'
-
-
-class Product(db.Model):
-    
-    __tablename__ = "products"
-
-    product_id = db.Column(db.Integer, primary_key=True)
-    product_name = db.Column(db.String)
-    product_price = db.Column(db.Integer)
-
-    #主リレーション
-    contracts = db.relationship("Contract", backref="products")
-
-    def __str__(self):
-        return f'商品ID:{self.product_id}商品名:{self.product_name}商品価格:{self.product_price}'
-
-
-class Pay(db.Model):
-    
-    __tablename__ = "pays"
-
-    pay_id = db.Column(db.Integer, primary_key=True)
-    customer_id = db.Column(db.Integer, db.ForeignKey("customers.customer_id"))#この行はいらないかも？
-    contract_id  = db.Column(db.Integer, db.ForeignKey("contracts.contract_id"))
-    pay_method_id  = db.Column(db.Integer, db.ForeignKey("pay_method.pay_method_id"))
-    #pay_total消した
-
-
-
-    def __str__(self):
-        return f'支払ID:{self.pay_id}顧客ID:{self.customer_id}契約ID:{self.contract_id}支払方法ID:{self.pay_method_id}'
-
-
-class Pay_method(db.Model):
-    
-    __tablename__ = "pay_method"
-
-    pay_method_id = db.Column(db.Integer, primary_key=True)
-    pay_method_name = db.Column(db.String)
-
-    pay_method = db.relationship("Pay", backref = "pey_method")
-
-    def __str__(self):
-        return f'支払方法ID:{self.pay_method_id}支払方法:{self.pay_method_name}'
-
-
+# ホーム画面
 @app.route("/")
-def index():
-        
-    money_customer_total = (
-        db.session.query(db.func.count(distinct(Contract.customer_id)).label("customer_total") , db.func.sum(Contract.contract_number * Product.product_price).label("money_total"))
-        .filter(Contract.product_id == Product.product_id)
-    )
+def home_page():
+    return render_template("home.html")
 
+# 顧客情報一覧
+@app.route("/customer_list")
+def customer_list_page():
+    # customerテーブルを取得する
+    """
+    クエリイメージ：
+    SERECT
+        *
+    FROM
+        customer
+    ORDER BY
+        customer_id ASC
+    """
+    customers = Customer.query.order_by(Customer.id).all()
+    return render_template("customer_list.html",customers=customers)
 
-    Period_lists = (
-        db.session.query(Period.period_id)
-    )
+# 顧客情報追加
+@app.route("/add_customer", methods=["GET", "POST"])
+def add_customer_page():
+    form = AddCustomerForm(request.form)
+    # Post
+    if request.method == "POST":
+        # データ受け取り
+        customer_id = form.customer_id.data
+        customer_name = form.customer_name.data
+        phone_number = form.phone_number.data
+        # DBにデータ追加
+        """
+        クエリイメージ：
+        INSERT INTO customers (id, customer_name, phone_number) VALUES (customer_id, customer_name, phone_number)
+        """
+        new_customer = Customer(id=customer_id, customer_name=customer_name, phone_number=phone_number)
+        db.session.add(new_customer)
+        db.session.commit()
+        # ホーム画面に戻す
+        return redirect(url_for("home_page"))
+    # Get
+    else:
+        return render_template("add_customer.html", form=form)
 
-    return render_template("index.html", money_customer_total=money_customer_total, Period_lists=Period_lists)
+# 商品情報一覧
+@app.route("/product_list")
+def product_list_page():
+    # customerテーブルを取得する
+    """
+    クエリイメージ：
+    SERECT
+        *
+    FROM
+        products
+    ORDER BY
+        priduct_id ASC
+    """
+    products = Product.query.order_by(Product.id).all()
+    return render_template("product_list.html",products=products)
 
+# 商品情報追加
+@app.route("/add_product", methods=["GET", "POST"])
+def add_product_page():
+    form = AddProductForm(request.form)
+    # Post
+    if request.method == "POST":
+        # データ受け取り
+        product_id = form.product_id.data
+        product_name = form.product_name.data
+        product_price = form.product_price.data
+        # DBにデータ追加
+        """
+        クエリイメージ：
+        INSERT INTO products (id, product_name, product_price) VALUES (product_id, product_name, product_price)
+        """
+        new_product = Product(id=product_id, product_name=product_name, product_price=product_price)
+        db.session.add(new_product)
+        db.session.commit()
+        # ホーム画面に戻す
+        return redirect(url_for("home_page"))
+    # Get
+    else:
+        return render_template("add_product.html", form=form)
 
+"""
 @app.route("/create_contract", methods = ["GET","POST"])
 def create_contract():
     # POST
@@ -199,8 +193,9 @@ def list(period_id):
         .group_by(Contract.customer_id)
         .order_by(Contract.customer_id)
     )
-    
-        
+
+
+
     period_by_contract_cutomer_total = (
         db.session.query(db.func.count(distinct(Contract.customer_id)).label("customer_total") , db.func.sum(Contract.contract_number * Product.product_price).label("money_total"))
         .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
@@ -229,6 +224,9 @@ def product_by_contract(product_id):
         .order_by(Contract.customer_id)
     )
     return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists)
+"""
+
+
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

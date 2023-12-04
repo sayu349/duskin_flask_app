@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>add_product</title>
+</head>
+<body>
+    <h1>商品情報追加</h1>
+    <hr>
+    <p>商品情報を入力してください</p>
+    <form method="POST">
+        {{ form.product_id.label }}{{ form.product_id(size=30) }}<br>
+        {{ form.product_name.label }}{{ form.product_name(size=30) }}<br>
+        {{ form.product_price.label }}{{ form.product_price(size=30) }}<br>
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('home_page') }}">ホーム画面に戻る</a></p>
+</body>
+</html>

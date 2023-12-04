@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>add_customer</title>
+</head>
+<body>
+    <h1>顧客情報追加</h1>
+    <hr>
+    <p>顧客情報を入力してください</p>
+    <form method="POST">
+        {{ form.customer_id.label }}{{ form.customer_id(size=30) }}<br>
+        {{ form.customer_name.label }}{{ form.customer_name(size=30) }}<br>
+        {{ form.phone_number.label }}{{ form.phone_number(size=30) }}<br>
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('home_page') }}">ホーム画面に戻る</a></p>
+</body>
+</html>
