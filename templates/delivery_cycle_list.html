@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>delivery_cycle_list</title>
+</head>
+<body>
+    <h1>周期一覧</h1>
+    <hr>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>周期ID</th>
+                <th>週</th>
+                <th>曜日</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ここに繰り返し処理を入れる -->
+            {% for delivery_cycle in delivery_cycles %}
+            <tr>
+                <!-- 周期ID -->
+                <td>{{ delivery_cycle.id }}</td>
+                <!-- 週 -->
+                <td>{{ delivery_cycle.week }}</td>
+                <!-- 曜日 -->
+                <td>{{ delivery_cycle.week_day }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><a href=" {{url_for('home_page')}} ">ホーム画面に戻る</a></p>
+</body>
+</html>

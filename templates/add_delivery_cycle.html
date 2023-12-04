@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>add_delivery_cycle</title>
+</head>
+<body>
+    <h1>周期情報追加</h1>
+    <hr>
+    <p>周期情報を入力してください</p>
+    <form method="POST">
+        {{ form.delivery_cycle_id.label }}{{ form.delivery_cycle_id(size=30) }}<br>
+        {{ form.week.label }}{{ form.week(size=30) }}<br>
+        {{ form.week_day.label }}{{ form.week_day(size=30) }}<br>
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('home_page') }}">ホーム画面に戻る</a></p>
+</body>
+</html>

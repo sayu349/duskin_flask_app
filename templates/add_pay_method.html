@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>add_pay_method</title>
+</head>
+<body>
+    <h1>決済方法追加</h1>
+    <hr>
+    <p>決済方法を入力してください</p>
+    <form method="POST">
+        {{ form.pay_method_id.label }}{{ form.pay_method_id(size=30) }}<br>
+        {{ form.pay_method_name.label }}{{ form.pay_method_name(size=30) }}<br>
+        {{ form.submit() }}
+    </form>
+    <p><a href="{{ url_for('home_page') }}">ホーム画面に戻る</a></p>
+</body>
+</html>

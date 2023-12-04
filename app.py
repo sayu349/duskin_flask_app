@@ -3,7 +3,7 @@ from flask_migrate import Migrate
 from models import db
 
 # forms.pyから各フォームを追加する
-from forms import AddCustomerForm, AddProductForm
+from forms import AddCustomerForm, AddProductForm, AddPayMethodForm, AddDeliveryCycleForm
 
 
 app = Flask(__name__)
@@ -158,75 +158,84 @@ def add_product_page():
     else:
         return render_template("add_product.html", form=form)
 
-"""
-@app.route("/create_contract", methods = ["GET","POST"])
-def create_contract():
-    # POST
-    if request.method == 'POST':
-        # 入力値取得
-        contract_id = request.form.get('contract_id')
-        period_id = request.form.get('period_id')
-        product_id = request.form.get('product_id')
-        contract_number = request.form.get('contract_number')
-        contract_situation = request.form.get('contract_situation')
-        # インスタンス生成
-        contract = Contract(contract_id=contract_id, period_id=period_id, product_id=product_id, contract_number=contract_number, contract_situation=contract_situation)
-        # 登録
-        db.session.add(contract)
+# 決済方法一覧
+@app.route("/pay_method_list")
+def pay_method_list_page():
+    # customerテーブルを取得する
+    """
+    クエリイメージ：
+    SERECT
+        *
+    FROM
+        pay_methods
+    ORDER BY
+        pay_method_id ASC
+    """
+    pay_methods = Pay_method.query.order_by(Pay_method.id).all()
+    return render_template("pay_method_list.html",pay_methods=pay_methods)
+
+# 決済方法追加
+@app.route("/add_pay_method", methods=["GET", "POST"])
+def add_pay_method_page():
+    form = AddPayMethodForm(request.form)
+    # Post
+    if request.method == "POST":
+        # データ受け取り
+        pay_method_id = form.pay_method_id.data
+        pay_method_name = form.pay_method_name.data
+        # DBにデータ追加
+        """
+        クエリイメージ：
+        INSERT INTO pay_methods (id, pay_method_name) VALUES (pay_method_id, pay_method_name)
+        """
+        new_pay_method = Pay_method(id=pay_method_id, pay_method_name=pay_method_name)
+        db.session.add(new_pay_method)
         db.session.commit()
-        # 一覧へ
-        return redirect("/")
-    # GET
-    return render_template('create_contract.html')
+        # ホーム画面に戻す
+        return redirect(url_for("home_page"))
+    # Get
+    else:
+        return render_template("add_pay_method.html", form=form)
 
+# 周期情報一覧
+@app.route("/delivery_cycle_list")
+def delivery_cycle_list_page():
+    # customerテーブルを取得する
+    """
+    クエリイメージ：
+    SERECT
+        *
+    FROM
+        delivery_cycles
+    ORDER BY
+        delivery_cycle_id ASC
+    """
+    delivery_cycles = Delivery_cycle.query.order_by(Delivery_cycle.id).all()
+    return render_template("delivery_cycle_list.html",delivery_cycles=delivery_cycles)
 
-@app.route("/period_contract/<int:period_id>", methods = ["POST"])
-def list(period_id):
-    period_by_contract_list = (
-        db.session.query(Contract.contract_id, Contract.customer_id, Customer.customer_name, Customer.telephon_number, Product.product_name, Product.product_price, Contract.contract_number, Contract.contract_situationm)
-        .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
-        .order_by(Contract.customer_id)
-    )
-    customer_by_contract_cutomer_total = (
-        db.session.query(func.sum(Product.product_price * Contract.contract_number).label("money_total"), Customer.customer_name, Customer.telephon_number)
-        .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
-        .group_by(Contract.customer_id)
-        .order_by(Contract.customer_id)
-    )
-
-
-
-    period_by_contract_cutomer_total = (
-        db.session.query(db.func.count(distinct(Contract.customer_id)).label("customer_total") , db.func.sum(Contract.contract_number * Product.product_price).label("money_total"))
-        .filter(Contract.contract_situationm != "解約済み", Contract.period_id == period_id)
-    )
-
-    return render_template("period_contract_list.html", period_by_contract_list=period_by_contract_list ,
-                                customer_by_contract_cutomer_total=customer_by_contract_cutomer_total ,
-                                period_by_contract_cutomer_total=period_by_contract_cutomer_total)
-
-
-@app.route("/product")
-def product():
-    prouduct_lists =(
-        db.session.query(Product.product_id, Product.product_name, Product.product_price)
-        .order_by(Product.product_id)
-    )
-
-    return render_template("product.html", prouduct_lists=prouduct_lists)
-
-
-@app.route("/product/<int:product_id>", methods = ["POST"])
-def product_by_contract(product_id):
-    product_by_contract_lists = (
-        db.session.query(Contract.period_id, Customer.customer_name, Customer.telephon_number)
-        .filter(Contract.contract_situationm != "解約済み", Contract.product_id == product_id)
-        .order_by(Contract.customer_id)
-    )
-    return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists)
-"""
-
-
+# 周期情報追加
+@app.route("/add_delivery_cycle", methods=["GET", "POST"])
+def add_delivery_cycle_page():
+    form = AddDeliveryCycleForm(request.form)
+    # Post
+    if request.method == "POST":
+        # データ受け取り
+        delivery_cycle_id = form.delivery_cycle_id.data
+        week = form.week.data
+        week_day = form.week_day.data
+        # DBにデータ追加
+        """
+        クエリイメージ：
+        INSERT INTO delivery_cycles (id, week, week_day) VALUES (delivery_cycle_id, week, week_day)
+        """
+        new_delivery_cycle = Delivery_cycle(id=delivery_cycle_id, week=week, week_day=week_day)
+        db.session.add(new_delivery_cycle)
+        db.session.commit()
+        # ホーム画面に戻す
+        return redirect(url_for("home_page"))
+    # Get
+    else:
+        return render_template("add_delivery_cycle.html", form=form)
 
 if __name__ == '__main__':
     app.run(debug=True)

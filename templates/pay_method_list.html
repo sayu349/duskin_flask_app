@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Pay_method_list</title>
+</head>
+<body>
+    <h1>決済方法一覧</h1>
+    <hr>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>決済方法ID</th>
+                <th>決済方法名</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- ここに繰り返し処理を入れる -->
+            {% for pay_method in pay_methods %}
+            <tr>
+                <!-- 決済方法ID -->
+                <td>{{ pay_method.id }}</td>
+                <!-- 決済方法名 -->
+                <td>{{ pay_method.pay_method_name }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <p><a href=" {{url_for('home_page')}} ">ホーム画面に戻る</a></p>
+</body>
+</html>
