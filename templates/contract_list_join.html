@@ -2,20 +2,21 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>contract_list</title>
+    <title>product_list_join</title>
 </head>
 <body>
-    <p>contract_list.html</p>
+    <p>contract_list_join.html</p>
     <h1>契約情報一覧</h1>
-    <p><a href=" {{url_for('contract_list_join_page')}} ">join後表示にする</a></p>
+    <p><a href=" {{url_for('contract_list_page')}} ">join前表示にする</a></p>
     <hr>
     <table border="1">
         <thead>
             <tr>
                 <th>契約ID</th>
-                <th>周期ID</th>
-                <th>顧客ID</th>
-                <th>商品ID</th>
+                <th>周</th>
+                <th>曜日</th>
+                <th>顧客名</th>
+                <th>商品名</th>
                 <th>契約数</th>
                 <th>契約状況</th>
                 <th>小計</th>
@@ -23,16 +24,18 @@
         </thead>
         <tbody>
             <!-- ここに繰り返し処理を入れる -->
-            {% for contract in contracts %}
+            {% for contract,delivery_cycle,customer,product  in results %}
             <tr>
                 <!-- 契約ID -->
                 <td>{{ contract.id }}</td>
-                <!-- 周期ID -->
-                <td>{{ contract.delivery_cycle_id }}</td>
-                <!-- 顧客ID -->
-                <td>{{ contract.customer_id }}</td>
-                <!-- 商品ID -->
-                <td>{{ contract.product_id }}</td>
+                <!-- 周 -->
+                <td>{{ delivery_cycle.week }}</td>
+                <!-- 曜日 -->
+                <td>{{ delivery_cycle.week_day }}</td>
+                <!-- 顧客名 -->
+                <td>{{ customer.customer_name }}</td>
+                <!-- 商品名 -->
+                <td>{{ product.product_name }}</td>
                 <!-- 契約数 -->
                 <td>{{ contract.contract_number }}</td>
                 <!-- 契約状況 -->

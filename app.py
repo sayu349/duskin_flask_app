@@ -58,6 +58,7 @@ Product        : 商品マスタ
 Pay            : 支払いマスタ
 Pay_method     : 支払い方法マスタ
 """
+# models.pyに移動しました
 from models import (
                     Contract,
                     Delivery_cycle,
@@ -290,9 +291,15 @@ def add_contract_page():
     else:
         return render_template("add_contract.html", form=form)
 
-
-
-
+@app.route("/contract_list_join")
+def contract_list_join_page():
+    # 契約マスタ・周期マスタ・顧客マスタ・商品マスタ
+    query = db.session.query(Contract, Delivery_cycle, Customer, Product). \
+        join(Delivery_cycle, Contract.delivery_cycle_id == Delivery_cycle.id). \
+        join(Customer, Contract.customer_id == Customer.id). \
+        join(Product, Contract.product_id == Product.id)
+    results = query.all()
+    return render_template("contract_list_join.html",results=results)
 
 
 
