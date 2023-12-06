@@ -1,29 +1,20 @@
 {% extends "base.html" %}
 {% block body %}
     <a href="/" class="button">戻る</a>
-    <h1>{{ period_id }}の顧客リスト</h1>
+    <h1>{{ period }}の顧客リスト</h1>
     <ul>
         {% for list in period_by_contract_list %}
         <div>
-            <p>{{ list.contract_id }}</p>
-            <p>{{ list.customer_id }}</p>
-            <p>{{ list.customer_name }}</p>
-            <p>{{ list.telephon_number }}</p>
-            <p>{{ list.product_name }}</p>
-            <p>{{ list.product_price }}</p>
-            <p>{{ list.contract_number }}</p>
-            <p>{{ list.contoract_situation }}</p>
+            <p>{{ list }}</p>
         </div>
         {% endfor %}
         {% for list in groupby_customer_money %}
         <div>
-            <p>{{ list }}</p>
-            <p>{{ list.customer_name }}</p>
-            <p>{{ list.telephon_number }}</p>
+            <p>顧客id{{ list.customer_id }} {{ list.customer_name }}さん 電話番号---{{ list.telephon_number }} 金額{{ list.subtotal }}</p>
         </div>
         {% endfor %}
     </ul>
-    <h1>リスト合計：金額・顧客件数</h1>
-    <p>{{ period_customer_total }}</p>
-    <p>{{ period_money_total }}</p>
+    <h3>リスト合計：金額・顧客件数</h3>
+    <p>{{ period_money_total }}円</p>
+    <p>{{ period_customer_total }}人</p>
 {% endblock %}

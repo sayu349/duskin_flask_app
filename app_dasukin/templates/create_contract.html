@@ -44,15 +44,31 @@
                     <option value="D日">日</option>
                 </optgroup>
             </select>
-            顧客id:<input type="number" name="customer_id">
-            商品id:<input type="text" name="product_id">
-            契約数:<input type="number" name="contract_number">
-            契約状況:
-            <select name="contract_situation">
-                <option value="契約済" selected>契約済み</option>
-                <option value="解約中">解約中</option>
-            </select>
+        顧客id:<input type="number" name="customer_id">
+        商品id:<input type="text" name="product_id">
+        契約数:<input type="number" name="contract_number">
+        契約状況:
+        <select name="contract_situation">
+            <option value="契約済" selected>契約済み</option>
+            <option value="解約中">解約中</option>
+        </select>
+        支払方法:
+        <select name="pay_method_id">
+            <option value="現金" selected>現金</option>
+            <option value="クレジット">クレジット</option>
+        </select>
             <input type="submit" value="登録" class="button">
         </form>
     </div>
+    {% for list in product_lists %}
+    <div>
+        <p>{{list}}</p>
+    </div>
+    {% endfor %}
+    
+    {% for list in customer_lists %}
+    <div>
+        <p>{{list}}</p>
+    </div>
+    {% endfor %}
 {% endblock %}

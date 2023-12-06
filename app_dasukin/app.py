@@ -57,8 +57,7 @@ class Period(db.Model):
 
   
     def __str__(self):
-        return f'周期ID:{self.period_id}'
-
+        return f'{self.period_id}'
 
 
 class Customer(db.Model):
@@ -94,9 +93,13 @@ class Product(db.Model):
 @app.route("/")
 def index():
     customer_total = Customer.query.count()
+        
+    
+    money_total = Contract.query.with_entities(func.sum(Contract.contract_number * Product.product_price)).join(Product).filter(Contract.contract_situation == "契約済").all()
 
-    money_total = Contract.query.join(Product).with_entities(Contract.contract_number * Product.product_price).filter(Contract.contract_situation == "契約済")    
+
     Period_lists = Period.query.all()
+
 
     return render_template("index.html", customer_total=customer_total,money_total=money_total ,Period_lists=Period_lists)
 
@@ -120,21 +123,75 @@ def create_contract():
         # 一覧へ
         return redirect("/")
     # GET
-    return render_template('create_contract.html')
+    customer_lists = Customer.query.all()
+    product_lists = Product.query.all()
+    return render_template('create_contract.html',customer_lists=customer_lists,product_lists=product_lists)
 
+
+@app.route("/create_customer", methods = ["GET","POST"])
+def create_customer():
+    # POST
+    if request.method == 'POST':
+        # 入力値取得
+        customer_id = request.form.get('customer_id')
+        customer_name = request.form.get('customer_name')
+        telephon_number = request.form.get('telephon_number')
+
+        # インスタンス生成
+        customer = Customer(customer_id=customer_id,customer_name=customer_name,telephon_number=telephon_number)
+        # 登録
+        db.session.add(customer)
+        db.session.commit()
+        # 一覧へ
+        return redirect("/")
+    # GET
+    return render_template('create_customer.html')
+
+
+@app.route("/create_product", methods = ["GET","POST"])
+def create_product():
+    # POST
+    if request.method == 'POST':
+        # 入力値取得
+        product_id = request.form.get('product_id')
+        product_name = request.form.get('product_name')
+        propduct_price = request.form.get('product_price')
+
+        # インスタンス生成
+        product_data = Product(product_id=product_id,product_name=product_name,propduct_price=propduct_price)
+        # 登録
+        db.session.add(product_data)
+        db.session.commit()
+        # 一覧へ
+        return redirect("/")
+    # GET
+    return render_template('create_product.html')
 
 @app.route("/period_contract/<period_id>")
 def list(period_id):
-    period_by_contract_list = Contract.query.join(Customer,Product).filter(Contract.contract_situation != "解約済み", Contract.period_id == period_id).all()
+
+    join_query = db.session.query(Contract, Period, Customer, Product). \
+        join(Period, Contract.period_id == Period.period_id). \
+        join(Customer, Contract.customer_id == Customer.customer_id). \
+        join(Product, Contract.product_id == Product.product_id)
+        
+
+    subtotal = Contract.contract_number * Product.product_price
+
+
+    period = Period.query.filter(Period.period_id == period_id).all()
+
+
+    period_by_contract_list = join_query.filter(Contract.contract_situation == "契約済", Contract.period_id == period_id).all()
     
-    groupby_customer_money = Contract.query.join(Product).group_by(Contract.customer_id).with_entities(Contract.contract_number * Product.product_price,Customer.customer_name,Customer.telephon_number).filter(Contract.contract_situation == "契約済", Contract.period_id == period_id)
+    groupby_customer_money = join_query.group_by(Contract.customer_id).with_entities(Contract.customer_id,func.sum(subtotal),Customer.customer_name,Customer.telephon_number).filter(Contract.contract_situation == "契約済", Contract.period_id == period_id)
     
 
-    period_customer_total = Contract.query.filter(Contract.contract_situation == "契約済", Contract.period_id == period_id).group_by(Contract.customer_id).count()
+    period_customer_total = Contract.query.group_by(Contract.customer_id).with_entities(Contract.contract_id).filter(Contract.contract_situation == "契約済", Contract.period_id == period_id).count()
 
-    period_money_total = Contract.join(Product).filter(Contract.contract_situation != "解約済み", Contract.period_id == period_id).with_entities(sum(Contract.contract_number * Product.product_price))
+    period_money_total = Contract.query.with_entities(func.sum(subtotal)).join(Product).filter(Contract.contract_situation == "契約済", Contract.period_id == period_id).all()
 
-    return render_template("period_contract_list.html", period_by_contract_list=period_by_contract_list
+    return render_template("period_contract_list.html", period_by_contract_list=period_by_contract_list,period=period
                            ,groupby_customer_money=groupby_customer_money,period_customer_total=period_customer_total
                            ,period_money_total=period_money_total)
 
@@ -148,8 +205,15 @@ def product():
 
 @app.route("/product/<product_id>")
 def product_by_contract(product_id):
-    product_by_contract_lists = Contract.query.join(Customer,Product).filter(Contract.product_id == product_id,Contract.contract_situation == "契約済").with_entities(Customer.customer_name,Contract.contract_number,Contract.pay_method_id)
-    return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists)
+
+    join_query = db.session.query(Contract, Period, Customer, Product). \
+        join(Period, Contract.period_id == Period.period_id). \
+        join(Customer, Contract.customer_id == Customer.customer_id). \
+        join(Product, Contract.product_id == Product.product_id)
+
+    select_product = Product.query.filter(Product.product_name == product_id).all()
+    product_by_contract_lists = join_query.filter(Contract.product_id == product_id,Contract.contract_situation == "契約済").all()
+    return render_template("product_by_contract.html", product_by_contract_lists=product_by_contract_lists,select_product=select_product)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

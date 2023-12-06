@@ -4,9 +4,9 @@
     <ul>
         {% for product_list in product_lists %}
         <div>
-            <a href="{{ url_for('product_by_contract', product_id=product_list.product_id) }}">{{ product_list.product_id }}</a>
-            <p>{{ product_list.product_name }}</p>
-            <p>{{ product_list.product_price}}</p><br>
+            id:<a href="{{ url_for('product_by_contract', product_id=product_list.product_id) }}">{{ product_list.product_id }}</a>
+            <p>商品名:{{ product_list.product_name }}</p>
+            <p>単価:{{ product_list.product_price}}</p>
         </div>
         {% endfor %}
     </ul>

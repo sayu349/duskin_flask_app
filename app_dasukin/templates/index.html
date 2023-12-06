@@ -1,17 +1,20 @@
 {% extends "base.html" %}
 {% block body %}
-    <a href="{{ url_for('create_contract') }}" class="button">新規作成</a>
-    <a href="{{ url_for('product') }}" class="button">商品一覧へ</a>
+    <a href="{{ url_for('create_contract') }}" class="button">契約作成</a>
+    <a href="{{ url_for('create_customer')}}" class="button">顧客追加</a>
+    <a href="{{ url_for('create_product')}}" class="button">商品追加</a>
     <h2>全データ合計:金額・顧客件数</h2>
     <ul>
         <div>
-            <p>{{ money_total }} </p>
-            <p>{{ customer_total }}</p>
+            <p>全体で{{ money_total }}円 </p>
+            <p>全体で{{ customer_total }}人</p>
         </div>
     </ul>
+    <h3>周期を選択</h3>
     <ul>
         {% for Period_list in Period_lists %}
             <a href="{{ url_for('list', period_id=Period_list.period_id) }}">{{ Period_list.period_id }}</a>
         {% endfor %}
     </ul>
+    <a href="{{ url_for('product') }}" class="button">商品一覧へ</a>
 {% endblock %}
