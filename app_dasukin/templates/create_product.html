@@ -4,10 +4,10 @@
     <div class="new_product">
         <h1>商品追加画面</h1>
         <form method="post" action="/create_product" size="2">
-            id:<input type="text" name="product_id">
-            商品名:<input type="text" name="product_name">
-            単価:<input type="number" name="product_price">
-            <input type="submit" value="登録" class="button">
+            id:<input type="text" name="product_id" required>
+            商品名:<input type="text" name="product_name" required>
+            単価:<input type="number" min="1" name="product_price" required>
+            <input type="submit" value="登録" class="button" >
         </form>
     </div>
 {% endblock %}

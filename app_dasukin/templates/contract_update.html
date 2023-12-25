@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block body %}
+
+
+
+<a href="{{ url_for('list',period_id=contract_data.period_id)}}" class="button">戻る</a>
+
+<div class="update_contract">
+    <h3>契約データ変更</h3>
+    <form method="post" action="/contract/update/{{ contract_data.contract_id }}" size="2">
+        周期：
+        <select name="period_id">
+            <optgroup label="A週">
+                <option value="A月">月</option>
+                <option value="A火">火</option>
+                <option value="A水">水</option>
+                <option value="A木">木</option>
+                <option value="A金">金</option>
+                <option value="A土">土</option>
+                <option value="A日">日</option>
+            </optgroup>
+            <optgroup label="B週">
+                <option value="B月">月</option>
+                <option value="B火">火</option>
+                <option value="B水">水</option>
+                <option value="B木">木</option>
+                <option value="B金">金</option>
+                <option value="B土">土</option>
+                <option value="B日">日</option>
+            </optgroup>
+            <optgroup label="C週">
+                <option value="C月">月</option>
+                <option value="C火">火</option>
+                <option value="C水">水</option>
+                <option value="C木">木</option>
+                <option value="C金">金</option>
+                <option value="C土">土</option>
+                <option value="C日">日</option>
+            </optgroup>
+            <optgroup label="D週">
+                <option value="D月">月</option>
+                <option value="D火">火</option>
+                <option value="D水">水</option>
+                <option value="D木">木</option>
+                <option value="D金">金</option>
+                <option value="D土">土</option>
+                <option value="D日">日</option>
+            </optgroup>
+        </select>
+    顧客id:<input type="number" min="0" name="customer_id" value="{{ contract_data.customer_id }}" required>
+    商品id:<input type="text" name="product_id" value="{{ contract_data.product_id }}" required>
+    契約数:<input type="number" min="1" name="contract_number" value="{{ contract_data.contract_number }}" required>
+    支払方法:
+    <select name="pay_method_id">
+        <option value="現金" selected>現金</option>
+        <option value="クレジット">クレジット</option>
+    </select>
+        <input type="submit" value="変更を保存" class="button">
+    </form>
+</div>
+
+
+{% endblock %}

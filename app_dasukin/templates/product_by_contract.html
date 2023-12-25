@@ -1,14 +1,41 @@
 {% extends "base.html" %}
 {% block body %}
     <a href="/product" class="button">戻る</a>
-    <h1>{{ select_product }}の顧客一覧</h1>
-    <ul>
-        {% for product_by_contract_list in product_by_contract_lists %}
-        <div>
-            <p>{{ product_by_contract_list }}</p>
+    {% for product in select_product %}
+    <h1>{{ product.product_name }}の顧客リスト</h1>
+    {% endfor %}
+    <div>
+        <h2>顧客リスト</h2>
 
-        </div>
+        {% for list in subtotal %}
+        <h3>合計金額:{{  list.subtotal or 0 }}</h3>
         {% endfor %}
-    </ul>
+        {% for list in contract_number %}
+        <h3>合計契約数:{{ list.contract_number or 0 }}</h3>
+        {% endfor %}
+        <table class="product_list" border="1">
+            <thead>
+                <tr>
+                    <th>周期</th>
+                    <th>契約数</th>
+                    <th>お客様名</th>
+                    <th>電話番号</th>
+                    <th>支払方法</th>
+                </tr>
+            </thead>
+            {% for list in product_by_contract_lists %}
+            <tbody>
+                <tr>
+                    <td>{{ list.period_id or "" }}</td>
+                    <td>{{ list.contract_number or "" }}</td>
+                    <td>{{ list.customer_name or "" }}</td>
+                    <td>{{ list.telephon_number or "" }}</td>
+                    <td>{{ list.pay_method_id or "" }}</td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+        
 
 {% endblock %}

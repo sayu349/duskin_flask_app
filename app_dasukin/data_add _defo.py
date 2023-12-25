@@ -42,18 +42,3 @@ with app.app_context():
     db.session.add_all([A1,A2,A3,A4,A5,A6,A7,B1,B2,B3,B4,B5,B6,B7,C1,C2,C3,C4,C5,C6,C7,D1,D2,D3,D4,D5,D6,D7])
     db.session.commit()
 #↑↑↑↑↑
-
-#Productデフォルト登録
-with app.app_context():
-    floor_mop = Product(product_id = "S212", product_name = "ゴールデンモップ", product_price = 930)
-    handy_mop = Product(product_id = "S237", product_name = "フリージー", product_price = 1040)
-    db.session.add_all([floor_mop,handy_mop])
-    db.session.commit()
-
-
-
-with app.app_context():
-    user1 = Customer(customer_id = 1, customer_name = "A", telephon_number = "090-4444-2111", customer_situation = "利用なし")
-    user2 = Customer(customer_id = 2, customer_name = "B", telephon_number = "080-2222-3456", customer_situation = "利用なし")
-    db.session.add_all([user1,user2])
-    db.session.commit()

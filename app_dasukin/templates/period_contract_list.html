@@ -1,20 +1,64 @@
 {% extends "base.html" %}
 {% block body %}
     <a href="/" class="button">戻る</a>
-    <h1>{{ period }}の顧客リスト</h1>
-    <ul>
-        {% for list in period_by_contract_list %}
-        <div>
-            <p>{{ list }}</p>
-        </div>
-        {% endfor %}
-        {% for list in groupby_customer_money %}
-        <div>
-            <p>顧客id{{ list.customer_id }} {{ list.customer_name }}さん 電話番号---{{ list.telephon_number }} 金額{{ list.subtotal }}</p>
-        </div>
-        {% endfor %}
-    </ul>
-    <h3>リスト合計：金額・顧客件数</h3>
-    <p>{{ period_money_total }}円</p>
-    <p>{{ period_customer_total }}人</p>
+    {% for Period in period %}
+    <h1>{{ Period.period_id }}の顧客リスト</h1>
+    {% endfor %}
+    <div>
+        <h2>顧客リスト</h2>
+        <table class="contract_list" border="1">
+            <thead>
+                <tr>
+                    <th>お客様名</th>
+                    <th>電話番号</th>
+                    <th>商品名</th>
+                    <th>契約数</th>
+                    <th>商品単価</th>
+                    <th>支払方法</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            {% for lists in period_by_contract_list %}
+            <tbody>
+                <tr>
+                    <td>{{ lists.customer_name or "" }}</td>
+                    <td>{{ lists.telephon_number or "" }}</td>
+                    <td>{{ lists.product_name or "" }}</td>
+                    <td>{{ lists.contract_number or "" }}</td>
+                    <td>{{ lists.product_price or "" }}</td>
+                    <td>{{ lists.pay_method_id or "" }}</td>
+                    <td><a href="{{ url_for('contract_update',contract_id=lists.contract_id)}}">変更</a></td>
+                    <td><a href="{{ url_for('contract_delete',contract_id=lists.contract_id)}}" class="button">解約</a></td>
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+        <h2>顧客ごとの合計金額</h2>
+        <table class="list" border="1">
+            <thead>
+                <tr>
+                    <th>お客様名</th>
+                    <th>電話番号</th>
+                    <th>合計金額</th>
+                </tr>
+            </thead>
+            {% for list in groupby_customer_money %}
+            <tbody>
+                <tr>
+                    <td>{{ list.customer_name or "無し" }}</td>
+                    <td>{{ list.telephon_number or "無し" }}</td>
+                    <td>{{ list.subtotal or 0 }}円</td>
+
+                </tr>
+            </tbody>
+            {% endfor %}
+        </table>
+    </div>
+    <h3>ページ内合計</h3>
+    {% for total in period_money_total %}
+    <p>合計金額{{ total or 0 }}円</p>
+    {% endfor %}
+    <p>合計顧客数{{ period_customer_total or 0 }}人</p>
 {% endblock %}

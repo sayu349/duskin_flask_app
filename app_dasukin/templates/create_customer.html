@@ -4,9 +4,10 @@
     <div class="new_customer">
         <h1>顧客追加画面</h1>
         <form method="post" action="/create_customer" size="2">
-            id:<input type="number" name="customer_id">
-            お客様名:<input type="text" name="customer_name">
-            電話番号:<input type="number" name="telephon_number">
+            id:<input type="number" min="0"name="customer_id" required>
+            お客様名:<input type="text" name="customer_name" required>
+            電話番号:<input type="tel" name="telephon_number"
+            pattern="[0-9]{3}-[0-9]{3,4}-[0-9]{4}"  required placeholder="123-4567-8901" required>
             <input type="submit" value="登録" class="button">
         </form>
     </div>

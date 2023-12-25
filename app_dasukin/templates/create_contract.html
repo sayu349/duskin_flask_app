@@ -4,7 +4,6 @@
     <div class="new_contract">
         <h1>契約登録画面</h1>
         <form method="post" action="/create_contract" size="2">
-            id:<input type="number" name="contract_id">
             周期：
             <select name="period_id">
                 <optgroup label="A週">
@@ -44,13 +43,13 @@
                     <option value="D日">日</option>
                 </optgroup>
             </select>
-        顧客id:<input type="number" name="customer_id">
-        商品id:<input type="text" name="product_id">
-        契約数:<input type="number" name="contract_number">
+        顧客id:<input type="number" min="0" name="customer_id" required>
+        商品id:<input type="text" name="product_id" required>
+        契約数:<input type="number" min="1" name="contract_number" required>
         契約状況:
         <select name="contract_situation">
-            <option value="契約済" selected>契約済み</option>
-            <option value="解約中">解約中</option>
+            <option value="契約中" selected>契約中</option>
+            <option value="解約済">解約済</option>
         </select>
         支払方法:
         <select name="pay_method_id">
@@ -60,15 +59,44 @@
             <input type="submit" value="登録" class="button">
         </form>
     </div>
-    {% for list in product_lists %}
-    <div>
-        <p>{{list}}</p>
-    </div>
-    {% endfor %}
-    
-    {% for list in customer_lists %}
-    <div>
-        <p>{{list}}</p>
-    </div>
-    {% endfor %}
+    <h3>商品リスト</h3>
+    <table class="product_list" border="1">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>商品名</th>
+                <th>単価</th>
+            </tr>
+        </thead>
+        {% for product_list in product_lists %}
+        <tbody>
+            <tr>
+                <td>{{ product_list.product_id }}</td>
+                <td>{{ product_list.product_name }}</td>
+                <td>{{ product_list.product_price }}</td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    <h3>顧客リスト</h3>
+    <table class="customer_list" border="1">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>お客様名</th>
+                <th>電話番号</th>
+                <th>利用状況</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer_list in customer_lists %}
+            <tr>
+                <td>{{ customer_list.customer_id }}</td>
+                <td>{{ customer_list.customer_name }}</td>
+                <td>{{ customer_list.telephon_number }}</td>
+                <td>{{ customer_list.customer_situation }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block body %}
+    <a href="/" class="button">戻る</a>
+    <h2>解約済の契約リスト</h2>
+    <table class="delete_list" border="1">
+        
+        <thead>
+            <tr>
+                <th>お客様名</th>
+                <th>電話番号</th>
+                <th>周期</th>
+                <th>商品名</th>
+                <th>単価</th>
+                <th>契約数</th>
+                <th>支払方法</th>
+                <th></th>
+            </tr>
+        </thead>
+        {% for lists in contract_delete_list %}
+        <tbody>
+            <tr>
+                
+                <td>{{ lists.customer_name }}</td>
+                <td>{{ lists.telephon_number }}</td>
+                <td>{{ lists.period_id }}</td>
+                <td>{{ lists.product_name }}</td>
+                <td>{{ lists.product_price }}</td>
+                <td>{{ lists.contract_number}}</td>
+                <td>{{ lists.pay_method_id}}</td>
+                <td><a href="{{ url_for('contract_true',contract_id=lists.contract_id,customer_id=lists.customer_id)}}">契約中に復元する</a></td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endblock %}

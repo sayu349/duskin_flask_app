@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block body %}
+<a href="/" class="button">戻る</a>
+    <h1>お客様一覧ページ</h1>
+    <ul>
+        <h3>注意！</h3>
+        <li>データ削除を行った場合、顧客データは完全に削除されます。</li>
+        <li>契約中のデータがある場合、データ削除は行えません。</li>
+        <li>データ削除を行うと解約済データはすべて削除されます。</li>
+    </ul>
+    <h3>リスト</h3>
+    <table class="list" border="1">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>お客様名</th>
+                <th>電話番号</th>
+                <th>利用状況</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for customer_list in customer_lists %}
+            <tr>
+                <td><a href="{{ url_for('customer_contract', customer_id=customer_list.customer_id) }}">{{ customer_list.customer_id }}</a></td>
+                <td>{{ customer_list.customer_name }}</td>
+                <td>{{ customer_list.telephon_number }}</td>
+                <td>{{ customer_list.customer_situation }}</td>
+                <td><a href="{{ url_for('customer_update', customer_id=customer_list.customer_id) }}">変更</a></td>
+                <td><a href="{{ url_for('customer_delete_perfect',customer_id=customer_list.customer_id) }}">データ削除</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

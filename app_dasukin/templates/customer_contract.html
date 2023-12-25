@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block body %}
+    <a href="/customer" class="button">戻る</a>
+    {% for customer in select_customer %}
+    <h1>{{ customer.customer_name }}の顧客リスト</h1>
+    {% endfor %}
+    <div>
+        <ul>
+            <h2>商品リスト</h2>
+
+            {% for list in subtotal %}
+            <h3>契約中データの合計</h3>
+            <li>合計金額:{{ list.subtotal or 0}}</li>
+            {% endfor %}
+            {% for list in contract_number %}
+            <li>合計契約数:{{ list.contract_number or 0}}</li>
+            {% endfor %}
+        </ul>
+        <div>
+            <h4>契約中データのリスト</h4>
+            <table class="customer_list" border="1">
+                
+                <thead>
+                    <tr>
+                        <th>周期</th>
+                        <th>契約数</th>
+                        <th>商品名</th>
+                        <th>単価</th>
+                        <th>支払方法</th>
+                    </tr>
+                </thead>
+                {% for list in customer_contract_lists %}
+                <tbody>
+                    <tr>
+                        <td>{{ list.period_id or "" }}</td>
+                        <td>{{ list.contract_number or "" }}</td>
+                        <td>{{ list.product_name or "" }}</td>
+                        <td>{{ list.product_price or "" }}</td>
+                        <td>{{ list.pay_method_id or "" }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+        <div>
+            <h4>解約済データのリスト</h4>
+            <table class="customer_list" border="1">
+                
+                <thead>
+                    <tr>
+                        <th>周期</th>
+                        <th>契約数</th>
+                        <th>商品名</th>
+                        <th>単価</th>
+                        <th>支払方法</th>
+                    </tr>
+                </thead>
+                {% for list in customer_contract_delete %}
+                <tbody>
+                    <tr>
+                        <td>{{ list.period_id or "" }}</td>
+                        <td>{{ list.contract_number or "" }}</td>
+                        <td>{{ list.product_name or "" }}</td>
+                        <td>{{ list.product_price or "" }}</td>
+                        <td>{{ list.pay_method_id or "" }}</td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+        
+
+{% endblock %}

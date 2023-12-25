@@ -1,14 +1,32 @@
 {% extends "base.html" %}
 {% block body %}
+<a href="/" class="button">戻る</a>
     <h1>商品一覧ページ</h1>
     <ul>
-        {% for product_list in product_lists %}
-        <div>
-            id:<a href="{{ url_for('product_by_contract', product_id=product_list.product_id) }}">{{ product_list.product_id }}</a>
-            <p>商品名:{{ product_list.product_name }}</p>
-            <p>単価:{{ product_list.product_price}}</p>
-        </div>
-        {% endfor %}
+        <h3>注意！</h3>
+        <li>データ削除を行った場合、商品データは完全に削除されます。</li>
+        <li>契約中のデータがある場合、データ削除は行えません。</li>
+        <li>データ削除を行うと解約済データはすべて削除されます。</li>
     </ul>
-    <a href="/" class="button">戻る</a>
+    <table class="list" border="1">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>商品名</th>
+                <th>単価</th>
+            </tr>
+        </thead>
+        {% for product_list in product_lists %}
+        <tbody>
+            <tr>
+                <td><a href="{{ url_for('product_by_contract', product_id=product_list.product_id) }}">{{ product_list.product_id }}</a></td>
+                <td>{{ product_list.product_name }}</td>
+                <td>{{ product_list.product_price }}</td>
+                <td><a href="{{ url_for('product_update', product_id=product_list.product_id)}}">変更</a></td>
+                <td><a href="{{ url_for('product_delete_perfect', product_id=product_list.product_id)}}">データを削除</a></td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    
 {% endblock %}

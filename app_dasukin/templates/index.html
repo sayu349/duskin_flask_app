@@ -6,15 +6,27 @@
     <h2>全データ合計:金額・顧客件数</h2>
     <ul>
         <div>
-            <p>全体で{{ money_total }}円 </p>
-            <p>全体で{{ customer_total }}人</p>
+            <div>
+                {% for money in money_total %}
+                <p>全体で{{ money or 0 }}円 </p>
+                {% endfor %}
+                {% for money in money_total_cash %}
+                <p>・現金が{{ money or 0 }}円</p>
+                {% endfor %}
+                {% for money in money_total_credit %}
+                <p>・クレジットが{{ money or 0}}円</p>
+                {% endfor %}
+            </div>
+            <p>全体で{{ customer_total or 0 }}人</p>
         </div>
     </ul>
     <h3>周期を選択</h3>
     <ul>
         {% for Period_list in Period_lists %}
-            <a href="{{ url_for('list', period_id=Period_list.period_id) }}">{{ Period_list.period_id }}</a>
+            <a href="{{ url_for('list',period_id=Period_list.period_id) }}">{{ Period_list.period_id }}</a>
         {% endfor %}
     </ul>
-    <a href="{{ url_for('product') }}" class="button">商品一覧へ</a>
+    <a href="/product" class="button">商品一覧へ</a>
+    <a href="/customer" class="button">お客様一覧へ</a>
+    <a href="/contract/delete/list" class="button">解約済の契約一覧へ</a>
 {% endblock %}
